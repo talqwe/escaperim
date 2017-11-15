@@ -1,36 +1,26 @@
 #!/usr/bin/perl
+
+=pod
+	Author: Tal Mishaan
+			Centerity R&D Nov 14, 2017
+=cut
+
+use lib './lib/';
 use strict;
 use warnings;
-use base qw/CGI::Application/;
-use CGI::Application::Plugin::Routes;
+use CGI qw(:standard);
+use Data::Dumper;
+use Controller::Controller;
 
-my $object = new Routes();
+sub main{
+    my $cgi = new CGI();
 
-setup($object);
+    my %vars = $cgi->Vars();
+    $vars{CGI} = $cgi;
 
-sub setup {
-    my $self = shift;
+    my $EI = new Controller({%vars});
 
-    # routes_root optionally is used to prepend a URI part to every route
-    $self->routes_root('/thismod');
-    $self->routes([
-        '' => 'home' ,
-        '/view/:name/:id/:email'  => 'view',
-    ]);
-
-    $self->start_mode('show');
-
-    $self->tmpl_path('templates/');
+    $EI->Run();
 }
 
-sub view {
-    my $self  = shift;
-    my $q     = $self->query();
-    my $name  = $q->param('name');
-    my $id    = $q->param('id');
-    my $email = $q->param('email');
-    my $debug = $self->routes_dbg; #dumps all the C::A::P::Routes info
-    my $params = $self->routes_params; #shows params found.
-    return $self->dump_html();
-}
-
+main();
