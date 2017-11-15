@@ -11,11 +11,14 @@ use warnings;
 use CGI qw(:standard);
 use Data::Dumper;
 use Controller::Controller;
+use Controller::DBController;
 
 sub main{
     my $cgi = new CGI();
 
     my %vars = $cgi->Vars();
+    die if (defined $vars{vars});
+
     $vars{CGI} = $cgi;
 
     my $EI = new Controller({%vars});

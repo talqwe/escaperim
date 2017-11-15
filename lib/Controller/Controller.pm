@@ -5,6 +5,7 @@ use warnings;
 use Data::Dumper;
 use CGI qw(:standard);
 use Model::User;
+use Controller::DBController;
 
 sub new{
 
@@ -13,6 +14,7 @@ sub new{
 
     my $this = {
         CGI     => undef,
+        DBC     => new DBController(),
     };
 
     map {$this->{$_} = ($USER_CONF->{$_})?($USER_CONF->{$_}):($this->{$_});} keys %$this;
