@@ -14,8 +14,8 @@ my $connector = sub {
         my $database = shift;
 
         $user       = 'root' unless $user;
-        $pass       = 'Rock5roll' unless $pass;
-        $database   = 'escaprim' unless $database;
+        $pass       = 'centQA12au' unless $pass;
+        $database   = 'escaperim' unless $database;
 
         my $db = DBI->connect( "DBI:mysql:$database", $user, $pass, { mysql_enable_utf8 => 1 }) or die "can't connect ==> $!";
         return $db;
@@ -325,7 +325,7 @@ sub InsertDBData{
     }
 	
 	$this->{STH} = $this->{DB}->prepare($sqlquery) || sub{ warn("WRONG QUERY: $sqlquery");  die($!)}->();
-	$this->{STH}->execute(@{$secureArray}) || sub{ warn("WRONG QUERY: $sqlquery");  die($!)}->();
+	$this->{STH}->execute(@{$secureArray}) || sub{ warn("WRONG QUERY: $sqlquery");  die("WRONG QUERY: $sqlquery".(Dumper @{$secureArray})." ".$!)}->();
 	$insertid = $this->{STH}->{mysql_insertid};
 	$this->{STH}->finish();
 	return $insertid; 
@@ -338,7 +338,7 @@ sub DeleteByID{
     my $this = shift;
     my $PARAM = shift || {};
 
-    return warn "__LINE__: __PACKAGE__ Table(".$this->{TABLE}.")|Column(".$this->{COLUMN}.")|Value(".$this->{VALUE}.")" if(!defined $PARAM->{TABLE} || !defined $PARAM->{COLUMN} || !defined $PARAM->{VALUE}});
+    return warn __PACKAGE__.":".__LINE__." Table(".$PARAM->{TABLE}.")|Column(".$PARAM->{COLUMN}.")|Value(".$PARAM->{VALUE}.")" if(!defined $PARAM->{TABLE} || !defined $PARAM->{COLUMN} || !defined $PARAM->{VALUE});
     $this->InsertDBData("delete from ".$PARAM->{TABLE}." where ".$PARAM->{COLUMN}." = ?", [ $PARAM->{VALUE} ]);
 }
 
@@ -346,18 +346,18 @@ sub InsertLine{
     my $this = shift;
     my $PARAM = shift || {};
 
-    return warn "__LINE__: __PACKAGE__ Table(".$this->{TABLE}.")|Column(".$this->{COLUMN}.")|Value(".$this->{VALUE}.")" if(!defined $PARAM->{TABLE} || scalar @$PARAM->{COLUMN} == 0 || scalar @$PARAM->{VALUE} =! scalar @$PARAM->{COLUMN});
+    return warn __PACKAGE__.":".__LINE__." Table(".$PARAM->{TABLE}.")|Column(".(Dumper $PARAM->{COLUMN}).")|Value(".(Dumper $PARAM->{VALUE}).")" if(!(defined $PARAM->{TABLE}) || (scalar @{$PARAM->{COLUMN}} == 0) || (scalar @{$PARAM->{VALUE}} != scalar @{$PARAM->{COLUMN}}));
 
-    $this->InsertDBData("insert into ".$PARAM->{TABLE}."(".join(',', @{$this->{COLUMN}}).") values(".join(',', map{ "?" } @{$this->{COLUMN}}).")", $this->{VALUE})
+    $this->InsertDBData("insert into ".$PARAM->{TABLE}."(".join(',', @{$PARAM->{COLUMN}}).") values(".join(',', map{ "?" } @{$PARAM->{COLUMN}}).")", $PARAM->{VALUE})
 }
 
 sub UpdateLine{
     my $this = shift;
     my $PARAM = shift || {};
 
-    return warn "__LINE__: __PACKAGE__ Table(".$this->{TABLE}.")|Column(".$this->{COLUMN}.")|Value(".$this->{VALUE}.")" if(!defined $PARAM->{TABLE} || scalar @$PARAM->{COLUMN} == 0 || scalar @$PARAM->{VALUE} =! scalar @$PARAM->{COLUMN});
+    return warn __PACKAGE__.":".__LINE__." Table(".$PARAM->{TABLE}.")|Column(".(Dumper $PARAM->{COLUMN}).")|Value(".(Dumper $PARAM->{VALUE}).")" if(!defined $PARAM->{TABLE} || scalar @{$PARAM->{COLUMN}} == 0 || scalar @{$PARAM->{VALUE}} != scalar @{$PARAM->{COLUMN}});
 
-    $this->InsertDBData("update ".$PARAM->{TABLE}." set ".join(',', map{ $_."=?" } @{$this->{COLUMN}}).")", $this->{VALUE})
+    $this->InsertDBData("update ".$PARAM->{TABLE}." set ".join(',', map{ $_."=?" } @{$PARAM->{COLUMN}}).")", $PARAM->{VALUE})
 }
 
 

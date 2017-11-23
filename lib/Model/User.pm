@@ -4,7 +4,11 @@ use strict;
 use warnings;
 use Data::Dumper;
 use CGI qw(:standard);
-use Model::User;
+use Model::Generic;
+use Model::Bank;
+use Moose::Role;
+
+with 'Generic';
 
 =pod
 
@@ -17,8 +21,6 @@ comments
 
 =cut
 
-use constant MODEL_TABLE => 'users';
-
 sub new{
 
     my $class = shift;
@@ -27,6 +29,21 @@ sub new{
     my $this = {
         CGI     => undef,
         DBC     => undef,
+        TABLE   => 'users',
+        UNIQUE  => {
+            id      => 1,
+            name    => 1,
+            email   => 1,
+        },
+
+        ORDER   => [
+            'id',
+            'name',
+            'email',
+            'password',
+            'facebook_url',
+            'comments',
+        ],
 
         vars    => {
             id              => 0,
@@ -40,41 +57,22 @@ sub new{
     };
 
     map {$this->{$_} = ($USER_CONF->{$_})?($USER_CONF->{$_}):($this->{$_});} keys %$this;
-    map {$this->{$_} = ($USER_CONF->{$_})?($USER_CONF->{$_}):($this->{$_});} keys %$this->{vars};
+    map {$this->{vars}->{$_} = ($USER_CONF->{$_})?($USER_CONF->{$_}):($this->{$_});} keys %{$this->{vars}};
     bless $this;
 
+    $this->{BANK} = new Bank({ CGI => $this->{CGI}, DBC => $this->{DBC}}, __PACKAGE__.'s');
+
+#    print '<pre>'.(Dumper $USER_CONF).'</pre>';
+#    print '<pre>'.(Dumper $this).'</pre>';
+
     return $this;
-}
-
-sub Display{
-    print "tal";
-}
-
-sub Create{
-    my $this = shift;
-
-    $this->{DBC}->InsertLine({
-        TABLE   => MODEL_TABLE,
-        COLUMN  => [ sort { $a <=> $b } keys %{$this->{vars}} ],
-        VALUE   => [ map{ $this->{vars}->{$_} } sort { $a <=> $b } keys %{$this->{vars}} ],
-    });
-}
-
-sub Remove{
-    my $this = shift;
-
-    $this->{DBC}->DeleteByID({
-        TABLE   => MODEL_TABLE,
-        COLUMN  => 'id',
-        VALUE   => $this->{id},
-    });
 }
 
 sub ChangePassword{
     my $this = shift;
 
     $this->{DBC}->UpdateLine({
-        TABLE   => MODEL_TABLE,
+        TABLE   => $this->{TABLE},
         COLUMN  => 'password',
         VALUE   => $this->{password},
     });

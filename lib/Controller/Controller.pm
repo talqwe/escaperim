@@ -5,6 +5,8 @@ use warnings;
 use Data::Dumper;
 use CGI qw(:standard);
 use Model::User;
+use View::UserView;
+use View::GeneralView;
 use Controller::DBController;
 
 sub new{
@@ -15,13 +17,18 @@ sub new{
     my $this = {
         CGI     => undef,
         DBC     => new DBController(),
+        GV      => new GeneralView(),
+        id      => undef,
+        name    => undef,
+        email   => undef,
+
     };
 
     map {$this->{$_} = ($USER_CONF->{$_})?($USER_CONF->{$_}):($this->{$_});} keys %$this;
     bless $this;
-    print "Content-type: text/html\n\n";
 
     $this->{MODELS} = BuildAllowedModels();
+    $this->{GV}->{CGI} = $this->{CGI};
 
     return $this;
 
@@ -34,7 +41,6 @@ sub PrintDumper{
 
 sub BuildAllowedModels{
     my $hash = {};
-    PrintDumper \%INC;
     map { if($_ =~ /^Model\/(.*)\.pm$/){ $hash->{$1} = 1 } } keys %INC;
     return $hash;
 }
@@ -42,11 +48,17 @@ sub BuildAllowedModels{
 sub Run{
     my $this = shift;
 
-    PrintDumper($this->{MODELS});
     my ($m, $a) = GetParametersFromURI($ENV{PATH_INFO});
 
-    my $model = User->new($this);
-    $model->$a();
+    my $model = $m->new($this);
+    my $return = $model->$a();
+
+    my $view_name = $m.'View';
+    my $view = $view_name->new();
+
+    $this->{GV}->Header();
+    $view->$a($return);
+    $this->{GV}->Footer();
 }
 
 sub GetParametersFromURI{
