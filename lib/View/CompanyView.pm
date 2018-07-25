@@ -1,4 +1,4 @@
-package UserView;
+package CompanyView;
 
 use strict;
 use warnings;
@@ -20,15 +20,6 @@ sub new{
 }
 
 sub Display{
-    my $this = shift;
-    my $data = shift;
-
-#    print Dumper $data;
-
-    TableView::PrintTable($data);
-}
-
-sub Rooms{
     my $this = shift;
     my $data = shift;
 

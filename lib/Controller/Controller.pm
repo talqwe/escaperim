@@ -5,7 +5,11 @@ use warnings;
 use Data::Dumper;
 use CGI qw(:standard);
 use Model::User;
+use Model::Room;
+use Model::Company;
 use View::UserView;
+use View::RoomView;
+use View::CompanyView;
 use View::GeneralView;
 use Controller::DBController;
 
@@ -48,7 +52,8 @@ sub BuildAllowedModels{
 sub Run{
     my $this = shift;
 
-    my ($m, $a) = GetParametersFromURI($ENV{PATH_INFO});
+    my ($m, $a, $id) = GetParametersFromURI($ENV{PATH_INFO});
+    $this->{ID} = $id || undef;
 
     my $model = $m->new($this);
     my $return = $model->$a();
@@ -65,7 +70,7 @@ sub GetParametersFromURI{
     my $string = shift;
     my $arr = [ split('\/', $string) ];
 
-    return ($arr->[1], $arr->[2]);
+    return ($arr->[1], $arr->[2], $arr->[3]);
 }
 
 1;

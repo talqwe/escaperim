@@ -13,12 +13,16 @@ sub new{
 
 sub Display{
     my $this = shift;
+    my $BANK_HEAD = shift || 0;
     my $view_data = {};
 
-    foreach my $unique (keys %{$this->{BANK}->{ucfirst($this->{TABLE})}}){
+    my $pointer = $this->{BANK}->{ucfirst($this->{TABLE})};
+    $pointer = $pointer->{$BANK_HEAD} if($BANK_HEAD && exists $pointer->{$BANK_HEAD});
+
+    foreach my $unique (keys %{$pointer}){
         $view_data->{$unique} = [];
         foreach my $p (@{$this->{ORDER}}){
-            push @{$view_data->{$unique}}, {$p => $this->{BANK}->{ucfirst($this->{TABLE})}->{$unique}->{$p}};
+            push @{$view_data->{$unique}}, {$p => $pointer->{$unique}->{$p}};
         }
     }
 

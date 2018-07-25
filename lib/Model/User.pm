@@ -29,7 +29,8 @@ sub new{
     my $this = {
         CGI     => undef,
         DBC     => undef,
-        TABLE   => 'users',
+        TABLE   => __PACKAGE__,
+        ID      => 0,
         UNIQUE  => {
             id      => 1,
             name    => 1,
@@ -60,12 +61,35 @@ sub new{
     map {$this->{vars}->{$_} = ($USER_CONF->{$_})?($USER_CONF->{$_}):($this->{$_});} keys %{$this->{vars}};
     bless $this;
 
-    $this->{BANK} = new Bank({ CGI => $this->{CGI}, DBC => $this->{DBC}}, __PACKAGE__.'s');
+    $this->{BANK} = new Bank({ CGI => $this->{CGI}, DBC => $this->{DBC}, ID => $this->{ID} }, __PACKAGE__);
 
 #    print '<pre>'.(Dumper $USER_CONF).'</pre>';
 #    print '<pre>'.(Dumper $this).'</pre>';
 
     return $this;
+}
+
+sub Rooms{
+    my $this = shift;
+
+    my @temp = @{$this->{ORDER}};
+
+    $this->{ORDER} = [
+        'id',
+        'name',
+        'hebrew_name',
+        'company',
+        'city',
+        'url',
+    ];
+
+    my $data = Generic::Display($this, 'my_rooms');
+
+    $this->{ORDER} = \@temp;
+
+#    warn Dumper $this;
+
+    return $data;
 }
 
 sub ChangePassword{

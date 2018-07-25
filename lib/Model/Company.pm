@@ -1,4 +1,4 @@
-package Room;
+package Company;
 
 use strict;
 use warnings;
@@ -14,10 +14,6 @@ with 'Generic';
 
 id
 name
-hebrew_name
-company_id
-city_id
-url
 
 =cut
 
@@ -29,28 +25,20 @@ sub new{
     my $this = {
         CGI     => undef,
         DBC     => undef,
-        TABLE   => __PACKAGE__,
-        ID      => undef,
+        TABLE   => 'company',
         UNIQUE  => {
             id            => 1,
+            name          => 1,
         },
 
         ORDER   => [
             'id',
             'name',
-            'hebrew_name',
-            'company',
-            'city',
-            'url',
         ],
 
         vars    => {
             id              => 0,
             name            => '',
-            hebrew_name     => '',
-            company_id      => 0,
-            city_id         => 0,
-            url             => '',
         },
 
     };

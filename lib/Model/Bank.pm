@@ -14,6 +14,7 @@ sub new{
     my $this = {
         CGI     => undef,
         DBC     => undef,
+        ID      => 0,
     };
 
     map {$this->{$_} = ($USER_CONF->{$_})?($USER_CONF->{$_}):($this->{$_});} keys %$this;
@@ -29,8 +30,9 @@ sub TableToFunc{
     my $this = shift;
 
     $this->{GET_BANK} = {
-      'Users'       => sub { $this->GetData('users'); },
-      'Rooms'       => sub { $this->GetData('rooms'); },
+      'User'       => sub { return { users => $this->GetData('user'), my_rooms => $this->GetUsersRooms() } },
+      'Room'       => sub { $this->GetRoomsData(); },
+      'Company'       => sub { $this->GetData('company'); },
     };
 }
 
@@ -38,6 +40,24 @@ sub GetData{
     my $this = shift;
     my $table = shift;
     return $this->{DBC}->GetDBData("select * from ".$table);
+}
+
+sub GetRoomsData{
+    my $this = shift;
+    my $arr = [];
+
+    my $select = "SELECT r.*,c.name as company,y.name as city from room r, company c, city y where r.company_id = c.id and r.city_id = y.id";
+    if($this->{ID}){
+        $select .= " and r.id = ?";
+        push @$arr, $this->{ID};
+    }
+    return $this->{DBC}->GetDBData($select, undef, undef, $arr);
+}
+
+sub GetUsersRooms{
+    my $this = shift;
+    my $select = "SELECT r.*,c.name as company,y.name as city from room r, company c, city y, user_room ur where r.company_id = c.id and r.city_id = y.id and ur.room_id = r.id and ur.user_id = ?";
+    return $this->{DBC}->GetDBData($select, undef, undef, [ $this->{ID} ]);
 }
 
 

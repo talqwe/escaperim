@@ -37,12 +37,12 @@ sub Header{
     {push(@{$params->{CSS}},$params->{CSS});}
 
 
-    print "Content-type: text/html\n\n" unless ($skip_type);
+    print "Content-Type: text/html charset=utf-8\n\n" unless ($skip_type);
     print '<!DOCTYPE html>
 
 		<html>
     		<head>
-        		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">';
+        		<meta http-equiv="Content-Type" content="text/html charset=UTF-8;">';
 
 
 
