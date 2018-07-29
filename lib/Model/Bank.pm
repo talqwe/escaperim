@@ -39,30 +39,44 @@ sub TableToFunc{
 sub GetData{
     my $this = shift;
     my $table = shift;
-    return $this->{DBC}->GetDBData("select * from ".$table);
+    my $select = "select * from ".$table." where 1=1 ";
+    my ($add, $arr) = $this->GetIDParams();
+    return $this->{DBC}->GetDBData($select.$add, undef, undef, $arr);
 }
 
 sub GetRoomsData{
     my $this = shift;
-    my $arr = [];
 
     my $select = "SELECT r.*,c.name as company,y.name as city from room r, company c, city y where r.company_id = c.id and r.city_id = y.id";
-    if($this->{ID}){
-        if(ref($this->{ID}) eq 'ARRAY'){
-            $select .= " and r.id in(".join(',', map { "?" } @{$this->{ID}}).")";
-            push @$arr, @{$this->{ID}};
-        }else{
-            $select .= " and r.id = ?";
-            push @$arr, $this->{ID};
-        }
-    }
-    return $this->{DBC}->GetDBData($select, undef, undef, $arr);
+    my ($add, $arr) = $this->GetIDParams('r');
+    return $this->{DBC}->GetDBData($select.$add, undef, undef, $arr);
 }
 
 sub GetUsersRooms{
     my $this = shift;
     my $select = "SELECT r.*,r.id as room_id,c.name as company,y.name as city from room r, company c, city y, user_room ur where r.company_id = c.id and r.city_id = y.id and ur.room_id = r.id and ur.user_id = ?";
     return $this->{DBC}->GetDBData($select, undef, undef, [ $this->{ID} ]);
+}
+
+sub GetIDParams{
+    my $this = shift;
+    my $table = shift || "";
+    $table .= "." if($table);
+
+    my $addition = "";
+    my $arr = [];
+
+    if($this->{ID}){
+        if(ref($this->{ID}) eq 'ARRAY'){
+            $addition .= " and ".$table."id in(".join(',', map { "?" } @{$this->{ID}}).")";
+            push @$arr, @{$this->{ID}};
+        }else{
+            $addition .= " and ".$table."id = ?";
+            push @$arr, $this->{ID};
+        }
+    }
+
+    return ($addition, $arr);
 }
 
 

@@ -13,7 +13,7 @@ sub new{
 
 sub Display{
     my $this = shift;
-    my $BANK_HEAD = shift || 0;
+    my $BANK_HEAD = shift || $this->{HEADER} || 0;
     my $view_data = {};
 
     my $pointer = $this->{BANK}->{ucfirst($this->{TABLE})};

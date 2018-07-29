@@ -31,6 +31,7 @@ sub new{
         DBC     => undef,
         TABLE   => __PACKAGE__,
         ID      => 0,
+        HEADER  => 'users',
         UNIQUE  => {
             id      => 1,
             name    => 1,
