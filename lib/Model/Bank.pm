@@ -30,13 +30,13 @@ sub TableToFunc{
     my $this = shift;
 
     $this->{GET_BANK} = {
-      'User'       => sub { return { users => $this->GetData('user'), my_rooms => $this->GetUsersRooms() } },
+      'User'       => sub { return { users => $this->GetTableData('user'), my_rooms => $this->GetUsersRooms() } },
       'Room'       => sub { $this->GetRoomsData(); },
-      'Company'       => sub { $this->GetData('company'); },
+      'Company'       => sub { $this->GetTableData('company'); },
     };
 }
 
-sub GetData{
+sub GetTableData{
     my $this = shift;
     my $table = shift;
     my $select = "select * from ".$table." where 1=1 ";
@@ -79,5 +79,27 @@ sub GetIDParams{
     return ($addition, $arr);
 }
 
+sub GetUserLogin{
+    my $this = shift;
+    my $user = shift;
+    my $pass = shift;
+
+    my $select = "select * from user where name = ? and password = SHA2(?, 256)";
+    my $data = $this->{DBC}->GetDBData($select, undef, undef, [ $user, $pass ]);
+
+    my $id = (keys %$data)[0] || return;
+
+    return $data->{$id} || return;
+}
+
+sub GetUserByToken{
+    my $this = shift;
+    my $token = shift;
+
+    my $select = "select * from user where token = ?";
+    my $data = $this->{DBC}->GetDBData($select, undef, undef, [ $token ]);
+
+    return $data;
+}
 
 1;

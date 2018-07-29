@@ -12,9 +12,6 @@ with 'Generic';
 
 =pod
 
-id
-name
-
 =cut
 
 sub new{
