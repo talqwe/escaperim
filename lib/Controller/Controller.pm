@@ -7,8 +7,10 @@ use CGI qw(:standard);
 use Model::User;
 use Model::Room;
 use Model::Company;
+use Model::Compare;
 use View::UserView;
 use View::RoomView;
+use View::CompareView;
 use View::CompanyView;
 use View::GeneralView;
 use Controller::DBController;
@@ -53,7 +55,17 @@ sub Run{
     my $this = shift;
 
     my ($m, $a, $id) = GetParametersFromURI($ENV{PATH_INFO});
-    $this->{ID} = $id || undef;
+    my @id_arr = split(',', $id) if($id);
+
+    $this->{ID} = undef;
+
+    if(scalar @id_arr){
+        if(scalar @id_arr == 1){
+            $this->{ID} = $id_arr[0] || undef;
+        }else{
+            $this->{ID} = \@id_arr;
+        }
+    }
 
     my $model = $m->new($this);
     my $return = $model->$a();

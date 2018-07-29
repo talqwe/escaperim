@@ -10,6 +10,10 @@ sub PrintTable{
     print '<tr>';
 
     my $first_key = (keys %{$hash})[0];
+    if(!$first_key){
+        print "NO DATA!";
+        return;
+    }
 
     foreach my $object (@{$hash->{$first_key}}){
         print '<th>'.(keys %$object)[0].'</th>';

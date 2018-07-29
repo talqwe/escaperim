@@ -48,15 +48,20 @@ sub GetRoomsData{
 
     my $select = "SELECT r.*,c.name as company,y.name as city from room r, company c, city y where r.company_id = c.id and r.city_id = y.id";
     if($this->{ID}){
-        $select .= " and r.id = ?";
-        push @$arr, $this->{ID};
+        if(ref($this->{ID}) eq 'ARRAY'){
+            $select .= " and r.id in(".join(',', map { "?" } @{$this->{ID}}).")";
+            push @$arr, @{$this->{ID}};
+        }else{
+            $select .= " and r.id = ?";
+            push @$arr, $this->{ID};
+        }
     }
     return $this->{DBC}->GetDBData($select, undef, undef, $arr);
 }
 
 sub GetUsersRooms{
     my $this = shift;
-    my $select = "SELECT r.*,c.name as company,y.name as city from room r, company c, city y, user_room ur where r.company_id = c.id and r.city_id = y.id and ur.room_id = r.id and ur.user_id = ?";
+    my $select = "SELECT r.*,r.id as room_id,c.name as company,y.name as city from room r, company c, city y, user_room ur where r.company_id = c.id and r.city_id = y.id and ur.room_id = r.id and ur.user_id = ?";
     return $this->{DBC}->GetDBData($select, undef, undef, [ $this->{ID} ]);
 }
 
