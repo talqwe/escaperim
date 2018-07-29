@@ -28,6 +28,7 @@ sub Display{
     print '
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 <link href="css/login_index.css" rel="stylesheet">
+<link href="../../css/login_index.css" rel="stylesheet">
 
 <div class="container">
     <form action="index.cgi/Login/Enter" method="post" autocomplete="off">
