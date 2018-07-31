@@ -65,4 +65,11 @@ sub Footer{
     print '</body></html>';
 }
 
+sub PrintError{
+    my $this = shift;
+    my $msg = shift;
+
+    print "Error:: ".$msg;
+}
+
 1;

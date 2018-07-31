@@ -25,7 +25,7 @@ sub Display{
 
     #    print Dumper $data;
 
-    TableView::PrintTable($data);
+    print "Index";
 }
 
 1;

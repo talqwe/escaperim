@@ -41,7 +41,7 @@ sub Display{
             <div class="col-md-offset-7 col-md-4">
                 <div class="form-login">
                     <h4>Welcome back.</h4>
-                    <input type="text" name="username" autocomplete="off" id="userName" class="form-control input-sm chat-input" placeholder="Username" />
+                    <input type="text" name="username" autocomplete="off" id="userName" class="form-control input-sm chat-input" placeholder="Username or Email" />
                     </br>
                     <input type="password" name="password" autocomplete="off" id="userPassword" class="form-control input-sm chat-input" placeholder="Password" />
                     </br>

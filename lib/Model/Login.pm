@@ -24,6 +24,7 @@ sub new{
     my $this = {
         CGI      => undef,
         DBC      => undef,
+        TOKEN    => undef,
         TABLE    => 'user',
         vars     => {
             password => undef,
@@ -45,8 +46,11 @@ sub Enter{
 
     my $user_object = $this->{BANK}->GetUserLogin($this->{vars}->{username}, $this->{vars}->{password});
     my $token = $this->GetCookieToken($user_object->{id}, $user_object->{name}, $user_object->{email});
+    $this->{TOKEN} = $token;
     $this->CreateCookie($token);
     $this->UpdateLogin($user_object->{id}, $token);
+
+    return $token;
 }
 
 sub Logout{
@@ -98,13 +102,15 @@ sub RemoveCookie{
 
 sub CheckLogin{
     my $this = shift;
+    my $token = shift;
 
-    my $cookie_token = GetLoginToken();
+    my $cookie_token = $token || $this->{TOKEN} || GetLoginToken();
     my $user_object = Bank::GetUserByToken($this, $cookie_token);
 
     return 1 if(scalar keys %$user_object == 1);
-    die "Number of rows for token ".$cookie_token." = ".scalar keys %$user_object;
+#    die "Number of rows for token ".$cookie_token." = ".scalar keys %$user_object;
 
+    return 0;
 }
 
 sub GetLoginToken{

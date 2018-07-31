@@ -84,8 +84,8 @@ sub GetUserLogin{
     my $user = shift;
     my $pass = shift;
 
-    my $select = "select * from user where name = ? and password = SHA2(?, 256) and approved = 1";
-    my $data = $this->{DBC}->GetDBData($select, undef, undef, [ $user, $pass ]);
+    my $select = "select * from user where (name = ? or email = ?) and password = SHA2(?, 256) and approved = 1";
+    my $data = $this->{DBC}->GetDBData($select, undef, undef, [ $user, $user, $pass ]);
 
     my $id = (keys %$data)[0] || return;
 

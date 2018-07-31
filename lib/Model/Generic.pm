@@ -31,19 +31,32 @@ sub Display{
 
 sub Create{
     my $this = shift;
+    my $BANK_HEAD = shift || $this->{HEADER} || 0;
 
-    print "Create";
+    my $module = $this->{TABLE}."View";
 
-    foreach my $object (keys %{$this->{BANK}->{ucfirst($this->{TABLE})}}){
+
+    my $pointer = $this->{BANK}->{ucfirst($this->{TABLE})};
+    $pointer = $pointer->{$BANK_HEAD} if($BANK_HEAD && exists $pointer->{$BANK_HEAD});
+
+    foreach my $object (keys %{$pointer}){
         foreach my $u (keys %{$this->{UNIQUE}}){
-                return if ($this->{BANK}->{ucfirst($this->{TABLE})}->{$object}->{$u} eq $this->{vars}->{$u});
+            if($pointer->{$object}->{$u} && $this->{vars}->{$u} && $pointer->{$object}->{$u} eq $this->{vars}->{$u}){
+                $module->Add(ucfirst($u)." is already in use!");
+                return;
             }
+        }
     }
 
+    my @values = map{ if($_ ne 'id') { $this->{vars}->{$_} } } sort { $a cmp $b } grep { defined $this->{vars}->{$_} } keys %{$this->{vars}};
+    push @values, time();
+    my @columns = sort { if($a ne 'id' && $b ne 'id') { $a cmp $b } } grep { defined $this->{vars}->{$_} } keys %{$this->{vars}};
+    push @columns, 'created_time';
+
     $this->{DBC}->InsertLine({
-        TABLE   => $this->{TABLE},
-        COLUMN  => [ sort { if($a ne 'id' && $b ne 'id') { $a cmp $b } } grep { defined $this->{vars}->{$_} } keys %{$this->{vars}} ],
-        VALUE   => [ map{ if($_ ne 'id') { $this->{vars}->{$_} } } sort { $a cmp $b } grep { defined $this->{vars}->{$_} } keys %{$this->{vars}} ],
+        TABLE   => lc($this->{TABLE}),
+        COLUMN  => \@columns,
+        VALUE   => \@values,
     });
 }
 

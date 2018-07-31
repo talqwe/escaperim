@@ -45,6 +45,7 @@ sub new{
             'password',
             'facebook_url',
             'comments',
+            'created_time',
         ],
 
         vars    => {
@@ -103,6 +104,8 @@ sub ChangePassword{
     });
 }
 
+sub Add{
 
+}
 
 1;

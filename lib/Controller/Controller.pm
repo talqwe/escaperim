@@ -27,14 +27,15 @@ sub new{
     my $USER_CONF = shift || {};
 
     my $this = {
-        CGI      => undef,
-        DBC      => new DBController(),
-        GV       => new GeneralView(),
-        id       => undef,
-        name     => undef,
-        email    => undef,
-        username => undef,
-        password => undef,
+        CGI             => undef,
+        DBC             => new DBController(),
+        GV              => new GeneralView(),
+        id              => undef,
+        name            => undef,
+        email           => undef,
+        username        => undef,
+        password        => undef,
+        facebook_url    => undef,
     };
 
     map {$this->{$_} = ($USER_CONF->{$_})?($USER_CONF->{$_}):($this->{$_});} keys %$this;
@@ -58,16 +59,33 @@ sub BuildAllowedModels{
     return $hash;
 }
 
+sub RaiseError{
+    my $this = shift;
+    my $msg = shift;
+
+    $this->{GV}->Header();
+    $this->{GV}->PrintError($msg);
+    $this->{GV}->Footer();
+    exit;
+}
+
 sub Run{
     my $this = shift;
+    my $login = 0;
 
-#    print "Content-Type: text/html charset=utf-8\n\n";
+    #    print "Content-Type: text/html charset=utf-8\n\n";
     my ($m, $action, $id) = GetParametersFromURI($ENV{PATH_INFO});
-    $m = "Login" if(!$m);
-    $action = "Display" if($m eq 'Login' && !$action);
 
-    if(!($m eq "Login" && ($action eq "Display" || $action eq "Enter"))){
-        $this->{GV}->PrintError('Login Error!') if(!(Login::CheckLogin($this)));
+    $m = "Login" if(!$m);
+    $login = Login::CheckLogin($this) if(!(($m eq 'Login') || ($m eq 'User' && $action eq 'Add')));
+
+    $m = "Index" if((!$m || $m eq 'Login') && $login);
+    $action = "Display" if(($m eq 'Login' && !$action) || $m eq 'Index');
+
+    if(!($m eq "Login" && ($action eq "Display" || $action eq "Enter") || ($m eq 'User' && $action eq 'Add'))){
+        if(!($login)){
+            $this->RaiseError('Login Error!');
+        }
     }
 
     my @id_arr = split(',', $id) if($id);
@@ -84,6 +102,17 @@ sub Run{
 
     my $model = $m->new($this);
     my $return = $model->$action();
+
+    if($m eq "Login" && $action eq 'Enter'){
+        if(Login::CheckLogin($this, $return)){
+            $m = 'Index';
+            $action = 'Display';
+            my $model1 = Index->new($this);
+            $return = $model1->Display();
+        }else{
+            $this->RaiseError('Login Error!');
+        }
+    }
 
     my $view_name = $m.'View';
     my $view = $view_name->new();
