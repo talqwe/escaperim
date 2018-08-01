@@ -39,20 +39,20 @@ sub Rooms{
 
 sub Add{
     my $this = shift;
-    my $error = shift || "";
+    my $PARAM = shift || "";
 
     print '
 <div class="container">
 	<div class="row main">
 		<div class="panel-heading">
            <div class="panel-title text-center">
-           		<h1 class="title">Company Name</h1>
+           		<h1 class="title">Create User</h1>
            		<hr />
            	</div>
         </div>
         <div class="panel-heading">
            <div class="text-center">
-           		<h5 class="title">'.$error.'</h5>
+           		<h5 class="title">'.($PARAM->{ERROR}||"").'</h5>
            	</div>
         </div>
 		<div class="main-login main-center">
