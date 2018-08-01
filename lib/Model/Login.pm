@@ -50,7 +50,7 @@ sub Enter{
     $this->CreateCookie($token);
     $this->UpdateLogin($user_object->{id}, $token);
 
-    return $token;
+    return {TOKEN => $token};
 }
 
 sub Logout{
