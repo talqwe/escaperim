@@ -52,6 +52,35 @@ sub new{
     return $this;
 }
 
+sub GetFromName{
+    my $this = shift;
+    my $name = shift;
+
+    foreach my $c_id (keys %{$this->{BANK}->{Company}}){
+        if($this->{BANK}->{Company}->{$c_id}->{name} eq $name){
+            return $c_id;
+        }
+    }
+
+    return 0;
+}
+
+sub InsertNewCompany{
+    my $this = shift;
+    my $name = shift;
+
+    $this->{vars}->{name} = $name;
+    return $this->Create();
+}
+
+sub GetOrInsertFromName{
+    my $this = shift;
+    my $name = shift;
+
+    my $id = $this->GetFromName($name);
+
+    return ($id)?($id):($this->InsertNewCompany($name));
+}
 
 
 1;
