@@ -7,6 +7,7 @@ use CGI qw(:standard);
 use Model::Generic;
 use Model::Bank;
 use Moose::Role;
+use Model::Company;
 
 with 'Generic';
 
@@ -31,8 +32,11 @@ sub new{
         DBC     => undef,
         TABLE   => __PACKAGE__,
         ID      => undef,
+        company => undef,
         UNIQUE  => {
-            id            => 1,
+            id          => 1,
+            name        => 1,
+            hebrew_name => 1,
         },
 
         ORDER   => [
@@ -62,6 +66,25 @@ sub new{
     $this->{BANK} = new Bank({ CGI => $this->{CGI}, DBC => $this->{DBC}, ID => $this->{ID} }, __PACKAGE__);
 
     return $this;
+}
+
+sub Add{
+    my $this = shift;
+    $this->{cities} = $this->{BANK}->{GET_BANK}->{City}->();
+    delete ($this->{cities}->{0});
+
+    return {
+        CITIES  => $this->{cities},
+        ERROR   => '',
+    };
+}
+
+sub Create{
+    my $this = shift;
+    my $COMPANY = new Company({ DBC => $this->{DBC} });
+    $this->{vars}->{company_id} = $COMPANY->GetOrInsertFromName($this->{company});
+
+    Generic::Create($this);
 }
 
 

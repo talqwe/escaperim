@@ -36,6 +36,11 @@ sub new{
         username        => undef,
         password        => undef,
         facebook_url    => undef,
+        company         => undef,
+        hebrew_name     => undef,
+        company_id      => undef,
+        city_id         => undef,
+        url             => undef,
     };
 
     map {$this->{$_} = ($USER_CONF->{$_})?($USER_CONF->{$_}):($this->{$_});} keys %$this;
@@ -102,13 +107,16 @@ sub Run{
 
     my $model = $m->new($this);
     my $return = $model->$action();
+    $return = {} if(!$return);
+
+    $action = $return->{NEW_ACTION} if(ref($return) eq 'HASH' && $return->{NEW_ACTION});
 
     if($m eq "Login" && $action eq 'Enter'){
-        if(Login::CheckLogin($this, $return)){
+        if(Login::CheckLogin($this, $return->{TOKEN})){
             $m = 'Index';
             $action = 'Display';
-            my $model1 = Index->new($this);
-            $return = $model1->Display();
+            my $model1 = $m->new($this);
+            $return = $model1->$action();
         }else{
             $this->RaiseError('Login Error!');
         }
