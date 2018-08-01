@@ -42,8 +42,12 @@ sub Create{
     foreach my $object (keys %{$pointer}){
         foreach my $u (keys %{$this->{UNIQUE}}){
             if($pointer->{$object}->{$u} && $this->{vars}->{$u} && $pointer->{$object}->{$u} eq $this->{vars}->{$u}){
-                $module->Add(ucfirst($u)." is already in use!");
-                return;
+                return {
+                    ERROR       => ucfirst($u)." is already in use!",
+                    NEW_ACTION  => 'Add',
+                };
+#                $module->Add({ ERROR => ucfirst($u)." is already in use!" });
+#                return;
             }
         }
     }
@@ -53,7 +57,7 @@ sub Create{
     my @columns = sort { if($a ne 'id' && $b ne 'id') { $a cmp $b } } grep { defined $this->{vars}->{$_} } keys %{$this->{vars}};
     push @columns, 'created_time';
 
-    $this->{DBC}->InsertLine({
+    return $this->{DBC}->InsertLine({
         TABLE   => lc($this->{TABLE}),
         COLUMN  => \@columns,
         VALUE   => \@values,
