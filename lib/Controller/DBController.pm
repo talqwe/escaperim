@@ -348,7 +348,7 @@ sub InsertLine{
 
     return warn __PACKAGE__.":".__LINE__." Table(".$PARAM->{TABLE}.")|Column(".(Dumper $PARAM->{COLUMN}).")|Value(".(Dumper $PARAM->{VALUE}).")" if(!(defined $PARAM->{TABLE}) || (scalar @{$PARAM->{COLUMN}} == 0) || (scalar @{$PARAM->{VALUE}} != scalar @{$PARAM->{COLUMN}}));
 
-    $this->InsertDBData("insert into ".$PARAM->{TABLE}."(".join(',', @{$PARAM->{COLUMN}}).") values(".join(',', map{ "?" } @{$PARAM->{COLUMN}}).")", $PARAM->{VALUE})
+    return $this->InsertDBData("insert into ".$PARAM->{TABLE}."(".join(',', @{$PARAM->{COLUMN}}).") values(".join(',', map{ "?" } @{$PARAM->{COLUMN}}).")", $PARAM->{VALUE})
 }
 
 sub UpdateLine{
