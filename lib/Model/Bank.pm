@@ -32,7 +32,8 @@ sub TableToFunc{
     $this->{GET_BANK} = {
       'User'       => sub { return { users => $this->GetTableData('user'), my_rooms => $this->GetUsersRooms() } },
       'Room'       => sub { $this->GetRoomsData(); },
-      'Company'       => sub { $this->GetTableData('company'); },
+      'Company'    => sub { $this->GetTableData('company'); },
+      'City'       => sub { $this->GetTableData('city'); },
     };
 }
 
