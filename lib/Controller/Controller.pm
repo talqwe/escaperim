@@ -17,6 +17,8 @@ use Model::Room;
 use View::RoomView;
 use Model::Company;
 use View::CompanyView;
+use Model::Contact;
+use View::ContactView;
 
 use View::GeneralView;
 use Controller::DBController;
@@ -41,6 +43,9 @@ sub new{
         company_id      => undef,
         city_id         => undef,
         url             => undef,
+        content         => undef,
+        subject         => undef,
+        user_id         => undef,
     };
 
     map {$this->{$_} = ($USER_CONF->{$_})?($USER_CONF->{$_}):($this->{$_});} keys %$this;
@@ -81,13 +86,12 @@ sub Run{
     #    print "Content-Type: text/html charset=utf-8\n\n";
     my ($m, $action, $id) = GetParametersFromURI($ENV{PATH_INFO});
 
-    $m = "Login" if(!$m);
     $login = Login::CheckLogin($this) if(!(($m eq 'Login') || ($m eq 'User' && $action eq 'Add')));
-
-    $m = "Index" if((!$m || $m eq 'Login') && $login);
+    RedirectIndex() if((!$m || $m eq 'Login') && $login && ($action ne 'Logout'));
+    $m = "Login" if(!$m);
     $action = "Display" if(($m eq 'Login' && !$action) || $m eq 'Index');
 
-    if(!($m eq "Login" && ($action eq "Display" || $action eq "Enter") || ($m eq 'User' && $action eq 'Add'))){
+    if(!($m eq "Login" || ($m eq 'User' && $action eq 'Add'))){
         if(!($login)){
             $this->RaiseError('Login Error!');
         }
@@ -105,27 +109,24 @@ sub Run{
         }
     }
 
+    my $data = {};
+    $data->{TOKEN} = Login::GetLoginToken();
+    $data->{USER_DETAILS} = Login::GetUserDetails($this, $data->{TOKEN});
+    $this->{ID} = (keys %{$data->{USER_DETAILS}})[0] if(!$this->{ID} && $m eq 'User');
+
     my $model = $m->new($this);
+    $model->{vars}->{user_id} = (keys %{$data->{USER_DETAILS}})[0] if(exists $model->{vars}->{user_id} && !$model->{vars}->{user_id});
+
     my $return = $model->$action();
     $return = {} if(!$return);
 
     $action = $return->{NEW_ACTION} if(ref($return) eq 'HASH' && $return->{NEW_ACTION});
 
-    if($m eq "Login" && $action eq 'Enter'){
-        if(Login::CheckLogin($this, $return->{TOKEN})){
-            $m = 'Index';
-            $action = 'Display';
-            my $model1 = $m->new($this);
-            $return = $model1->$action();
-        }else{
-            $this->RaiseError('Login Error!');
-        }
-    }
-
     my $view_name = $m.'View';
     my $view = $view_name->new();
 
     $this->{GV}->Header();
+    $this->{GV}->Layout($data);
     $view->$action($return);
     $this->{GV}->Footer();
 }
@@ -135,6 +136,11 @@ sub GetParametersFromURI{
     my $arr = [ split('\/', $string) ];
 
     return ($arr->[1] || undef, $arr->[2] || undef, $arr->[3] || undef);
+}
+
+sub RedirectIndex{
+    print "Content-Type: text/html charset=utf-8\n\n";
+    print '<script type="text/javascript">window.location.href = "/escaperim/Index/Display";</script>';
 }
 
 1;
