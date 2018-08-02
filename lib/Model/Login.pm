@@ -104,13 +104,27 @@ sub CheckLogin{
     my $this = shift;
     my $token = shift;
 
+    return 1 if(scalar keys %{GetUserDetails($this, $token)} == 1);
+    return 0;
+}
+
+sub GetUserIDFromToken{
+    my $this = shift;
+    my $token = shift || 0;
+
+    my $data = GetUserDetails($this, $token);
+
+    return (keys %$data)[0];
+}
+
+sub GetUserDetails{
+    my $this = shift;
+    my $token = shift;
+
     my $cookie_token = $token || $this->{TOKEN} || GetLoginToken();
     my $user_object = Bank::GetUserByToken($this, $cookie_token);
 
-    return 1 if(scalar keys %$user_object == 1);
-#    die "Number of rows for token ".$cookie_token." = ".scalar keys %$user_object;
-
-    return 0;
+    return $user_object;
 }
 
 sub GetLoginToken{
