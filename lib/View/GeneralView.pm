@@ -114,7 +114,7 @@ sub Layout{
                         <li><a href="/escaperim/Contact/Form">Contact Me :)</a></li>
                     </ul>
                     <ul class="nav navbar-nav pull-right">
-                        <li class=" dropdown"><a href="/escaperim/Login/Profile" class="dropdown-toggle active" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Signed in as '.$user_name.'</a>
+                        <li class=""><a href="/escaperim/Login/Profile">Signed in as '.$user_name.'</a>
                         <li class=""><a href="/escaperim/Login/Logout">Logout</a></li>
                     </ul>
                 </div>
