@@ -20,12 +20,7 @@ sub new{
 }
 
 sub Display{
-    my $this = shift;
-    my $data = shift;
 
-    #    print Dumper $data;
-
-    print "Index";
 }
 
 1;
