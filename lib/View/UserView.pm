@@ -42,7 +42,7 @@ sub Add{
     my $PARAM = shift || "";
 
     print '
-<div class="container">
+<div class="container container-content">
 	<div class="row main">
 		<div class="panel-heading">
            <div class="panel-title text-center">
@@ -56,7 +56,7 @@ sub Add{
            	</div>
         </div>
 		<div class="main-login main-center">
-			<form class="form-horizontal" method="post" action="../../index.cgi/User/Create">
+			<form class="form-horizontal" method="post" action="/escaperim/User/Create" autocomplete="off">
 
 				<div class="form-group">
 					<label for="name" class="cols-sm-2 control-label">Your Name</label>
@@ -102,7 +102,7 @@ sub Add{
 					<input type="submit" value="Register" class="btn btn-primary btn-lg btn-block login-button">
 				</div>
 				<div class="login-register text-center">
-		            <a href="../../index.cgi/Login/Display">Login</a>
+		            <a href="/escaperim/Login/Display">Login</a>
 		        </div>
 			</form>
 		</div>

@@ -27,11 +27,10 @@ sub Display{
 
     print '
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-<link href="css/login_index.css" rel="stylesheet">
-<link href="../../css/login_index.css" rel="stylesheet">
+<link href="/escaperim/css/login_index.css" rel="stylesheet">
 
 <div class="container">
-    <form action="index.cgi/Login/Enter" method="post" autocomplete="off">
+    <form action="/escaperim/Login/Enter" method="post" autocomplete="off">
         <div class="row">
             <span class="col-md-offset-7 col-md-4">
                 <h1>Compare Escaperim</h1>
@@ -60,7 +59,11 @@ sub Display{
 
 sub Enter{
     my $this = shift;
-    print "tal";
+    print '<script type="text/javascript">window.location.href = "/escaperim/Index/Display";</script>';
+}
+
+sub Logout{
+    print '<script type="text/javascript">window.location.href = "/escaperim/Login/Display";</script>';
 }
 
 1;

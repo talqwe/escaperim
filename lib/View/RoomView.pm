@@ -33,7 +33,7 @@ sub Add{
     my $PARAM = shift;
 
     print '
-<div class="container">
+<div class="container container-content">
 	<div class="row main">
 		<div class="panel-heading">
            <div class="panel-title text-center">
@@ -47,7 +47,7 @@ sub Add{
            	</div>
         </div>
 		<div class="main-login main-center">
-			<form class="form-horizontal" method="post" action="../../index.cgi/Room/Create">
+			<form class="form-horizontal" method="post" action="/escaperim/Room/Create" autocomplete="off">
 
 				<div class="form-group">
 					<label for="name" class="cols-sm-2 control-label">Room English Name</label>
