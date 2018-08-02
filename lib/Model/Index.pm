@@ -28,6 +28,11 @@ sub new{
     return $this;
 }
 
+sub Display{
+    my $this = shift;
+
+}
+
 
 
 1;
