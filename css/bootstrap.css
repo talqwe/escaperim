@@ -788,6 +788,10 @@ pre code {
   margin-left: auto;
 }
 
+.container-content {
+  margin-top: 50px;
+}
+
 .container:before,
 .container:after {
   display: table;
