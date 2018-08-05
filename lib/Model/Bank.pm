@@ -34,6 +34,7 @@ sub TableToFunc{
       'Room'       => sub { $this->GetRoomsData(); },
       'Company'    => sub { $this->GetTableData('company'); },
       'City'       => sub { $this->GetTableData('city'); },
+      'Friend'     => sub { $this->GetTableData('friend'); },
     };
 }
 
