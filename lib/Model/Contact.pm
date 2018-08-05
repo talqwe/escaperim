@@ -7,7 +7,6 @@ use CGI qw(:standard);
 use Model::Generic;
 use Model::Bank;
 use Moose::Role;
-use Model::Company;
 
 with 'Generic';
 
@@ -66,7 +65,5 @@ sub Form{
 
 
 }
-
-
 
 1;
