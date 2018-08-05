@@ -6,6 +6,11 @@ use warnings;
 sub PrintTable{
     my $hash = shift; # { unique_p => { unique_p => val, p2 => val } }
 
+
+    print '
+    <div class="container container-content">
+	    <div class="row main">
+';
     print '<table class="table">';
     print '<tr>';
 
@@ -16,7 +21,7 @@ sub PrintTable{
     }
 
     foreach my $object (@{$hash->{$first_key}}){
-        print '<th>'.(keys %$object)[0].'</th>';
+        print '<th>'.ucfirst((keys %$object)[0]).'</th>';
     }
 
     print '</tr>';
@@ -30,6 +35,8 @@ sub PrintTable{
 
         print '</tr>';
     }
+
+    print '</div></div>';
 }
 
 1;
