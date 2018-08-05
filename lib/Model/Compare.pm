@@ -7,6 +7,7 @@ use CGI qw(:standard);
 use Model::Generic;
 use Model::Bank;
 use Moose::Role;
+use Model::Friend;
 
 with 'Generic';
 
@@ -20,9 +21,13 @@ sub new{
     my $USER_CONF = shift || {};
 
     my $this = {
-        CGI     => undef,
-        DBC     => undef,
-        ID      => undef,
+        CGI  => undef,
+        DBC  => undef,
+        ID   => undef,
+
+        vars => {
+            user_id => undef,
+        }
     };
 
     map {$this->{$_} = ($USER_CONF->{$_})?($USER_CONF->{$_}):($this->{$_});} keys %$this;
@@ -62,6 +67,20 @@ sub Users{
     map { push @{$total->{ALL_DIDNT}}, $all_rooms->{$_} } keys %$all_rooms;
 
     return $total;
+}
+
+sub Prepare{
+    my $this = shift;
+
+    my $F = new Friend({ DBC => $this->{DBC}, CGI => $this->{CGI}, user_id => $this->{vars}->{user_id} });
+    my $data = $F->GetFriendList();
+
+    return {
+        ERROR   => '',
+        FRIENDS => $data,
+        MY_ID   => $this->{vars}->{user_id},
+    }
+
 }
 
 
