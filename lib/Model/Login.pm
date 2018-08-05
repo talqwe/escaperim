@@ -58,6 +58,10 @@ sub Logout{
     $this->RemoveCookie('token');
 }
 
+sub Profile{
+    my $this = shift;
+}
+
 sub UpdateLogin{
     my $this = shift;
     my $user_id = shift;

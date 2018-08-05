@@ -66,4 +66,9 @@ sub Logout{
     print '<script type="text/javascript">window.location.href = "/escaperim/Login/Display";</script>';
 }
 
+sub Profile{
+    my $this = shift;
+
+}
+
 1;
