@@ -19,6 +19,8 @@ use Model::Company;
 use View::CompanyView;
 use Model::Contact;
 use View::ContactView;
+use Model::Friend;
+use View::FriendView;
 
 use View::GeneralView;
 use Controller::DBController;
@@ -46,6 +48,7 @@ sub new{
         content         => undef,
         subject         => undef,
         user_id         => undef,
+        search_friend   => undef,
     };
 
     map {$this->{$_} = ($USER_CONF->{$_})?($USER_CONF->{$_}):($this->{$_});} keys %$this;
@@ -85,21 +88,24 @@ sub Run{
 
     #    print "Content-Type: text/html charset=utf-8\n\n";
     my ($m, $action, $id) = GetParametersFromURI($ENV{PATH_INFO});
+    $id = [$this->{CGI}->param('id')] if(!$id && $this->{CGI}->param('id'));
 
     $login = Login::CheckLogin($this) if(!(($m eq 'Login') || ($m eq 'User' && $action eq 'Add')));
-    RedirectIndex() if((!$m || $m eq 'Login') && $login && ($action ne 'Logout'));
+    $this->Redirect('Index') if((!$m || $m eq 'Login') && $login && ($action ne 'Logout'));
     $m = "Login" if(!$m);
     $action = "Display" if(($m eq 'Login' && !$action) || $m eq 'Index');
 
     if(!($m eq "Login" || ($m eq 'User' && $action eq 'Add'))){
         if(!($login)){
-            $this->RaiseError('Login Error!');
+#            $this->RaiseError('Login Error!');
+            $this->Redirect('Login');
         }
     }
 
-    my @id_arr = split(',', $id) if($id);
+    my @id_arr = split(',', $id) if($id && ref($id) ne 'ARRAY');
 
     $this->{ID} = undef;
+    $this->{ID} = $id if(ref($id) eq 'ARRAY');
 
     if(scalar @id_arr){
         if(scalar @id_arr == 1){
@@ -126,7 +132,7 @@ sub Run{
     my $view = $view_name->new();
 
     $this->{GV}->Header();
-    $this->{GV}->Layout($data);
+    $this->{GV}->Layout($data) if($m ne 'Login' || ($m eq 'Login' && $action eq 'Profile'));
     $view->$action($return);
     $this->{GV}->Footer();
 }
@@ -138,9 +144,12 @@ sub GetParametersFromURI{
     return ($arr->[1] || undef, $arr->[2] || undef, $arr->[3] || undef);
 }
 
-sub RedirectIndex{
+sub Redirect{
+    my $this = shift;
+    my $header = shift || 'Index';
+
     print "Content-Type: text/html charset=utf-8\n\n";
-    print '<script type="text/javascript">window.location.href = "/escaperim/Index/Display";</script>';
+    print '<script type="text/javascript">window.location.href = "/escaperim/'.$header.'/Display";</script>';
 }
 
 1;
